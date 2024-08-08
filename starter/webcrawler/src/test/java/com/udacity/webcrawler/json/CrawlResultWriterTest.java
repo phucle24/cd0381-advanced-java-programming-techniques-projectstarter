@@ -1,5 +1,6 @@
 package com.udacity.webcrawler.json;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.udacity.webcrawler.testing.CloseableStringWriter;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,9 @@ public final class CrawlResultWriterTest {
             .build();
 
     CrawlResultWriter resultWriter = new CrawlResultWriter(result);
+    // This will prevent Jackson from closing the Writer
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.disable(com.fasterxml.jackson.core.JsonGenerator.Feature.AUTO_CLOSE_TARGET);
     CloseableStringWriter stringWriter = new CloseableStringWriter();
     resultWriter.write(stringWriter);
     assertWithMessage("Streams should usually be closed in the same scope where they were created")

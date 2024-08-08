@@ -1,5 +1,6 @@
 package com.udacity.webcrawler.json;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public final class ConfigurationLoaderTest {
 
   @Test
-  public void testBasicJsonConversion() {
+  public void testBasicJsonConversion() throws IOException {
     String json = "{ " +
         "\"startPages\": [\"http://example.com\", \"http://example.com/foo\"], " +
         "\"ignoredUrls\": [\"http://example\\\\.com/.*\"], " +
@@ -28,6 +29,9 @@ public final class ConfigurationLoaderTest {
         " }";
 
     Reader reader = new StringReader(json);
+    // This will prevent Jackson from closing the Reader
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.disable(com.fasterxml.jackson.core.JsonParser.Feature.AUTO_CLOSE_SOURCE);
     CrawlerConfiguration config = ConfigurationLoader.read(reader);
     try {
       assertThat(reader.ready()).isTrue();
@@ -51,7 +55,7 @@ public final class ConfigurationLoaderTest {
   }
 
   @Test
-  public void testOptionalOptions() {
+  public void testOptionalOptions() throws IOException {
     // Same as above, but without any explicit implementationOverride or parallelism.
     String json = "{ " +
         "\"maxDepth\": 100, " +
@@ -60,6 +64,9 @@ public final class ConfigurationLoaderTest {
         " }";
 
     Reader reader = new StringReader(json);
+    // This will prevent Jackson from closing the Reader
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.disable(com.fasterxml.jackson.core.JsonParser.Feature.AUTO_CLOSE_SOURCE);
     CrawlerConfiguration config = ConfigurationLoader.read(reader);
     try {
       assertThat(reader.ready()).isTrue();
